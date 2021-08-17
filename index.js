@@ -21,6 +21,6 @@ mongoose.connect(process.env.DB_CNN, {
             console.log(`Servidor corriendo en http://localhost:${port}`);
         });//le pasamos dos param, 1 el puerto y el 2do un callback  para que dentro se ejecute lo quiere hacer en este caso un conole.log()
 }).catch(err => {
-    console.log("Promise Rejected"+err);
+    console.log(`Promise Rejected ${err}`);
 });
 
