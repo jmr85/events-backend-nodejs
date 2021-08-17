@@ -18,7 +18,7 @@ mongoose.connect(process.env.DB_CNN, {
      console.log('La conexion a la base de datos correcta!!!!');
         //crear  servidor y ponerme a escuchar peticiones HTTP
         app.listen(process.env.PORT, () => {
-            console.log(`Servidor corriendo en http://localhost:${port}`);
+            console.log(`Servidor corriendo en puerto ${process.env.PORT}`);
         });//le pasamos dos param, 1 el puerto y el 2do un callback  para que dentro se ejecute lo quiere hacer en este caso un conole.log()
 }).catch(err => {
     console.log(`Promise Rejected ${err}`);
