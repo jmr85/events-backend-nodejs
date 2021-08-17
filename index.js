@@ -6,7 +6,11 @@ var app = require('./app');
 
 mongoose.set('useFindAndModify', false);
 mongoose.Promise = global.Promise;
-mongoose.connect(process.env.DB_CNN, { useNewUrlParser: true })
+mongoose.connect(process.env.DB_CNN, { 
+    useNewUrlParser: true, 
+    useUnifiedTopology: true,
+    useCreateIndex: true 
+    })
     .then(() => {
         console.log('La conexion a la base de datos correcta!!!!');
         //crear  servidor y ponerme a escuchar peticiones HTTP
