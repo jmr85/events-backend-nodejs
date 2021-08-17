@@ -2,17 +2,20 @@
 
 var mongoose = require('mongoose');
 var app = require('./app');
+require('dotenv').config();
 //var port = 4000;
 
 mongoose.set('useFindAndModify', false);
+
 mongoose.Promise = global.Promise;
+
 mongoose.connect(process.env.DB_CNN, { 
     useNewUrlParser: true, 
     useUnifiedTopology: true,
     useCreateIndex: true 
-    })
-    .then(() => {
-        console.log('La conexion a la base de datos correcta!!!!');
+})
+.then(() => {
+     console.log('La conexion a la base de datos correcta!!!!');
         //crear  servidor y ponerme a escuchar peticiones HTTP
         app.listen(process.env.PORT, () => {
             console.log(`Servidor corriendo en http://localhost:${port}`);
