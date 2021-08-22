@@ -6,6 +6,7 @@ var fs = require("fs");
 var path = require("path");
 
 var User = require("../models/user");
+const { isNumber } = require("util");
 
 var controller = {
   datosPersona: (req, res) => {
@@ -70,15 +71,17 @@ var controller = {
   getUsers: (req, res) => {
     var query = User.find({});
 
-    var last = req.params.last;
+    var last = req.query.last;
     console.log(last);
 
-    if (last || last != undefined) {
-      query.limit(5);
+    if (last && last != undefined && !isNaN(last)) {
+      console.log("Linea 78: ", last);
+      query.limit(parseInt(last));
     }
     // find
     query.sort("-_id").exec((err, users) => {
       if (err) {
+        console.error(err);
         return res.status(500).send({
           status: "error",
           message: "Error al devolver los users !!!",
@@ -92,10 +95,9 @@ var controller = {
         });
       }
 
-      return res.status(200).send({
-        status: "success",
-        users,
-      });
+      return res.status(200).send(
+        users
+      );
     });
   },
   getUser: (req, res) => {
