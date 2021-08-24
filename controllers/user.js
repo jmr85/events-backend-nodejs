@@ -52,10 +52,11 @@ var controller = {
         message: "Los datos no son validos !!!",
       });
     }
-    return res.status(200).send({
-      Usuario: params,
-    });
+    return res.status(201).send(
+      params
+    );
   },
+
   getUsers: (req, res) => {
     var query = Usuario.find({});
 
