@@ -17,7 +17,6 @@ var controller = {
     //2. Validar datos (con la libreria validator)
     try {
       var validate_nombre = !validator.isEmpty(params.nombre); // cuando no esta vacio
-      var validate_apellido = !validator.isEmpty(params.apellido);
       var validate_clave = !validator.isEmpty(params.clave);
       var validate_mail = !validator.isEmpty(params.mail);
     } catch (error) {
@@ -26,12 +25,11 @@ var controller = {
         Usuario: "Faltan datos por enviar",
       });
     }
-    if (validate_nombre && validate_apellido && validate_clave && validate_mail) {
+    if (validate_nombre && validate_clave && validate_mail) {
       //3. Crear el objeto a guardar
       var usuario = new Usuario();
       //4. Asignar valores al objeto
       usuario.nombre = params.nombre;
-      usuario.apellido = params.apellido;
       usuario.mail = params.mail;
       usuario.clave = params.clave;
 
