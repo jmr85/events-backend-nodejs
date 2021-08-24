@@ -5,58 +5,48 @@ var validator = require("validator");
 var fs = require("fs");
 var path = require("path");
 
-var User = require("../models/user");
+var Usuario = require("../models/usuario");
 const { isNumber } = require("util");
 
 var controller = {
-  datosPersona: (req, res) => {
-    var hola = req.body.hola;
 
-    return res.status(200).send({
-      nombre: "Juan",
-      apellido: "Ruiz",
-      hola,
-    });
-  },
-  test: (req, res) => {
-    return res.status(200).send({
-      message: "Soy la accion test de mi controlador de Users",
-    });
-  },
   save: (req, res) => {
     //1. Tomar los parametros por post
     var params = req.body;
-    console.log(params);
+    console.log("Pametros: ", params);
     //2. Validar datos (con la libreria validator)
     try {
-      var validate_name = !validator.isEmpty(params.name); // cuando no esta vacio
-      var validate_lastname = !validator.isEmpty(params.lastname);
+      var validate_nombre = !validator.isEmpty(params.nombre); // cuando no esta vacio
+      var validate_apellido = !validator.isEmpty(params.apellido);
+      var validate_clave = !validator.isEmpty(params.clave);
+      var validate_mail = !validator.isEmpty(params.mail);
     } catch (error) {
       return res.status(200).send({
         status: "error",
-        User: "Faltan datos por enviar",
+        Usuario: "Faltan datos por enviar",
       });
     }
-    if (validate_name && validate_lastname) {
+    if (validate_nombre && validate_apellido && validate_clave && validate_mail) {
       //3. Crear el objeto a guardar
-      var user = new User();
+      var usuario = new Usuario();
       //4. Asignar valores al objeto
-      user.name = params.name;
-      user.lastname = params.lastname;
+      usuario.nombre = params.nombre;
+      usuario.apellido = params.apellido;
+      usuario.mail = params.mail;
+      usuario.clave = params.clave;
 
-      //5. Guardar el user
-      user.save((err, userStored) => {
+      //5. Guardar el usuario
+      usuario.save((err, userStored) => {
         if (err || !userStored) {
           return res.status(404).send({
             status: "error",
-            message: "El user no se ha guardado !!!",
+            message: "El usuario no se ha guardado !!!",
           });
         }
         //6. Devolver una respuesta
-        return res.status(200).send({
-          status: "success",
-          user: userStored,
-        });
+        return res.status(200).send(
+          userStored
+        );
       });
     } else {
       return res.status(200).send({
@@ -65,11 +55,11 @@ var controller = {
       });
     }
     return res.status(200).send({
-      User: params,
+      Usuario: params,
     });
   },
   getUsers: (req, res) => {
-    var query = User.find({});
+    var query = Usuario.find({});
 
     var last = req.query.last;
     console.log(last);
@@ -79,24 +69,24 @@ var controller = {
       query.limit(parseInt(last));
     }
     // find
-    query.sort("-_id").exec((err, users) => {
+    query.sort("-_id").exec((err, usuarios) => {
       if (err) {
         console.error(err);
         return res.status(500).send({
           status: "error",
-          message: "Error al devolver los users !!!",
+          message: "Error al devolver los usuarios !!!",
         });
       }
       
-      if (!users || users.length === 0) {
+      if (!usuarios || usuarios.length === 0) {
         return res.status(404).send({
           status: "error",
-          message: "No hay users para mostrar !!!",
+          message: "No hay usuarios para mostrar !!!",
         });
       }
 
       return res.status(200).send(
-        users
+        usuarios
       );
     });
   },
@@ -107,42 +97,43 @@ var controller = {
     if (!userId || userId == null) {
       return res.status(404).send({
         status: "error",
-        message: "No existe el user !!!",
+        message: "No existe el usuario !!!",
       });
     }
-    // Buscar el user
-    User.findById(userId, (err, user) => {
-      if (err || !user) {
+    // Buscar el usuario
+    Usuario.findById(userId, (err, usuario) => {
+      if (err || !usuario) {
         return res.status(404).send({
           status: "error",
-          message: "No existe el user !!!",
+          message: "No existe el usuario !!!",
         });
       }
       // Devolverlo en json
       return res.status(200).send({
-        status: "success",
-        user,
+        usuario,
       });
     });
   },
   update: (req, res) => {
-    // tomar el id de user que viene por la url
+    // tomar el id de usuario que viene por la url
     var userId = req.params.id;
     // tomar los datos (parametros) que llegan por put
     var params = req.body;
     // validar datos
     try {
-      var validate_name = !validator.isEmpty(params.name);
-      var validate_lastname = !validator.isEmpty(params.lastname);
+      var validate_nombre = !validator.isEmpty(params.nombre); // cuando no esta vacio
+      var validate_apellido = !validator.isEmpty(params.apellido);
+      var validate_clave = !validator.isEmpty(params.clave);
+      var validate_mail = !validator.isEmpty(params.mail);
     } catch (error) {
       return res.status(404).send({
         status: "error",
         message: "Faltan datos por enviar !!!",
       });
     }
-    if (validate_name && validate_lastname) {
+    if (validate_nombre && validate_apellido && validate_clave && validate_mail) {
       // Hacer un Find and Update
-      User.findByIdAndUpdate(
+      Usuario.findByIdAndUpdate(
         { _id: userId },
         params,
         { new: true },
@@ -156,13 +147,12 @@ var controller = {
           if (!userUdate) {
             return res.status(404).send({
               status: "error",
-              message: "No existe el user !!!",
+              message: "No existe el usuario !!!",
             });
           }
-          return res.status(200).send({
-            status: "success",
-            user: userUdate,
-          });
+          return res.status(200).send(
+            userUdate,
+          );
         }
       );
     } else {
@@ -178,7 +168,7 @@ var controller = {
     var userId = req.params.id;
 
     // Find and delete
-    User.findOneAndDelete({ _id: userId }, (err, userRemoved) => {
+    Usuario.findOneAndDelete({ _id: userId }, (err, userRemoved) => {
       if (err) {
         return res.status(500).send({
           status: "error",
@@ -189,14 +179,13 @@ var controller = {
       if (!userRemoved) {
         return res.status(404).send({
           status: "error",
-          message: "No se ha borrado el user, posiblemente no exista !!!",
+          message: "No se ha borrado el usuario, posiblemente no exista !!!",
         });
       }
 
-      return res.status(200).send({
-        status: "success",
-        user: userRemoved,
-      });
+      return res.status(200).send(
+        userRemoved,
+      );
     });
   }
 }; // end controller

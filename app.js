@@ -25,7 +25,8 @@ app.use((req, res, next) => {
 });
 
 //6. Añadir prefijos a las rutas / Cargar rutas
-app.use("/api", user_routes);
+//app.use("/api", user_routes);
+app.use("/", user_routes);// lo de asi para adaptar al front android de orne
 
 
 module.exports = app; 
