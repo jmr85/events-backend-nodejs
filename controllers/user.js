@@ -89,7 +89,7 @@ var controller = {
     });
   },
   getUser: (req, res) => {
-    // Recoger el id de la url
+    // Recoger el id de la urlss
     var userId = req.params.id;
     // Comprobar que existe
     if (!userId || userId == null) {
