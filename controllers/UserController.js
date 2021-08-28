@@ -7,55 +7,64 @@ var path = require("path");
 
 var Usuario = require("../models/usuario");
 const { isNumber } = require("util");
+const { populate } = require("../models/usuario");
+
+function generateError(status, message){
+    return {message: message, status: status};
+}
+
+function callbackUserCreate(err, userStored, res){
+  var result;
+  if (err || !userStored) {
+    result = res.status(404).send(generateError('Err','El usuario no se ha guardado !!!'));
+  }else{
+    result = res.status(201).send(userStored);
+  }
+  return result;
+}
+
+function populateUser(params){
+    //3. Crear el objeto a guardar
+    var usuario = new Usuario();
+    //4. Asignar valores al objeto
+    usuario.nombre = params.nombre;
+    usuario.mail = params.mail;
+    usuario.clave = params.clave;
+
+    return usuario;
+}
+
+function validateUser(params){
+  var validate_nombre = validator.isEmpty(params.nombre); // cuando no esta vacio
+  var validate_clave = validator.isEmpty(params.clave);
+  var validate_mail = validator.isEmpty(params.mail);
+
+  var err;
+
+  if (validate_nombre || validate_clave || validate_mail) {
+      err = generateError('Error', 'campo vacio');
+  }
+  return err;
+}
+
+function save (req, res) {
+ 
+  var params = req.body;
+  var errValidation = validateUser(params);
+  console.log("Pametros: ", params);
+
+  if(!errValidation){
+
+    var usuario = populateUser(params);
+
+    usuario.save((err, userCreate) => callbackUserCreate(err, userCreate, res));
+
+  }else{
+      return res.status(400).send(errValidation);
+  }
+}
 
 var controller = {
-
-  save: (req, res) => {
-    //1. Tomar los parametros por post
-    var params = req.body;
-    console.log("Pametros: ", params);
-    //2. Validar datos (con la libreria validator)
-    try {
-      var validate_nombre = !validator.isEmpty(params.nombre); // cuando no esta vacio
-      var validate_clave = !validator.isEmpty(params.clave);
-      var validate_mail = !validator.isEmpty(params.mail);
-    } catch (error) {
-      return res.status(200).send({
-        status: "error",
-        Usuario: "Faltan datos por enviar",
-      });
-    }
-    if (validate_nombre && validate_clave && validate_mail) {
-      //3. Crear el objeto a guardar
-      var usuario = new Usuario();
-      //4. Asignar valores al objeto
-      usuario.nombre = params.nombre;
-      usuario.mail = params.mail;
-      usuario.clave = params.clave;
-
-      //5. Guardar el usuario
-      usuario.save((err, userStored) => {
-        if (err || !userStored) {
-          return res.status(404).send({
-            status: "error",
-            message: "El usuario no se ha guardado !!!",
-          });
-        }
-        //6. Devolver una respuesta
-        return res.status(200).send(
-          userStored
-        );
-      });
-    } else {
-      return res.status(200).send({
-        status: "error",
-        message: "Los datos no son validos !!!",
-      });
-    }
-    return res.status(201).send(
-      params
-    );
-  },
 
   getUsers: (req, res) => {
     var query = Usuario.find({});
@@ -190,3 +199,4 @@ var controller = {
 }; // end controller
 
 module.exports = controller;
+module.exports.save = save;
