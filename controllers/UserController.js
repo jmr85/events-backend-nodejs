@@ -9,7 +9,7 @@ var Usuario = require("../models/usuario");
 const { isNumber } = require("util");
 const { populate } = require("../models/usuario");
 
-const bcrypt = require('bcryptjs');
+var bcrypt = require('bcryptjs');
 
 function generateError(status, message){
     return {message: message, status: status};
@@ -49,7 +49,7 @@ function validateUser(params){
   return err;
 }
 
-function save (req, res) {
+async function save (req, res) {
  
   var params = req.body;
   var errValidation = validateUser(params);
@@ -61,9 +61,10 @@ function save (req, res) {
 
      // Encriptar contraseña
      const salt = bcrypt.genSaltSync();
-     usuario.clave = bcrypt.hashSync( clave, salt );
+     //var clave; 
+     //usuario.clave = bcrypt.hashSync( clave, salt );
 
-    usuario.save((err, userCreate) => callbackUserCreate(err, userCreate, res));
+    await usuario.save((err, userCreate) => callbackUserCreate(err, userCreate, res));
 
   }else{
       return res.status(400).send(errValidation);
