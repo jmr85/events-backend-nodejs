@@ -60,7 +60,7 @@ async function save (req, res) {
     var usuario = populateUser(params);
 
      // Encriptar contraseña
-     const salt = bcrypt.genSaltSync();
+     var salt = bcrypt.genSaltSync();
      
      usuario.clave = bcrypt.hashSync( usuario.clave, salt );
 
