@@ -9,6 +9,8 @@ var Usuario = require("../models/usuario");
 const { isNumber } = require("util");
 const { populate } = require("../models/usuario");
 
+const bcrypt = require('bcryptjs');
+
 function generateError(status, message){
     return {message: message, status: status};
 }
@@ -57,11 +59,58 @@ function save (req, res) {
 
     var usuario = populateUser(params);
 
+     // Encriptar contraseña
+     const salt = bcrypt.genSaltSync();
+     usuario.clave = bcrypt.hashSync( clave, salt );
+
     usuario.save((err, userCreate) => callbackUserCreate(err, userCreate, res));
 
   }else{
       return res.status(400).send(errValidation);
   }
+}
+
+async function login (req, res = response ) {
+
+  //const { mail, clave } = req.body;
+  var params = req.body;
+  var mail = params.mail;
+  var clave = params.clave;
+
+  try {
+      
+      var usuario = await Usuario.findOne({ mail });
+
+      if ( !usuario ) {
+          return res.status(400).json({
+              ok: false,
+              msg: 'El usuario no existe con ese mail'
+          });
+      }
+
+      // Confirmar los passwords
+      const validPassword = bcrypt.compareSync( clave, usuario.clave );
+
+      if ( !validPassword ) {
+          return res.status(400).json({
+              ok: false,
+              msg: 'Password incorrecto'
+          });
+      }
+
+      // Devolverlo en json
+      return res.status(200).send({
+        usuario,
+      });
+
+  } catch (error) {
+      console.log(error);
+      res.status(500).json({
+          ok: false,
+          msg: 'Por favor hable con el administrador'
+      });
+  }
+
 }
 
 var controller = {
@@ -200,3 +249,4 @@ var controller = {
 
 module.exports = controller;
 module.exports.save = save;
+module.exports.login = login;
