@@ -61,8 +61,8 @@ async function save (req, res) {
 
      // Encriptar contraseña
      const salt = bcrypt.genSaltSync();
-     //var clave; 
-     //usuario.clave = bcrypt.hashSync( clave, salt );
+     
+     usuario.clave = bcrypt.hashSync( usuario.clave, salt );
 
     await usuario.save((err, userCreate) => callbackUserCreate(err, userCreate, res));
 
