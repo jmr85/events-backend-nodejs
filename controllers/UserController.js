@@ -71,10 +71,10 @@ async function save (req, res) {
   }
 }
 
-async function login (req, res = response ) {
+async function login (req, res) {
 
-  //const { mail, clave } = req.body;
   var params = req.body;
+
   var mail = params.mail;
   var clave = params.clave;
 
@@ -90,7 +90,7 @@ async function login (req, res = response ) {
       }
 
       // Confirmar los passwords
-      const validPassword = bcrypt.compareSync( clave, usuario.clave );
+      var validPassword = bcrypt.compareSync( clave, usuario.clave );
 
       if ( !validPassword ) {
           return res.status(400).json({

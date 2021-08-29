@@ -9,7 +9,7 @@ var router = express.Router();
 
 // Rutas usuarios
 router.post("/usuarios", UserController.save);
-router.post("/usuarios", UserController.login);
+router.post("/login", UserController.login);
 router.get("/test", TestController.get);
 router.get("/usuarios", UserController.getUsers);
 router.get("/usuarios/:id", UserController.getUser);
