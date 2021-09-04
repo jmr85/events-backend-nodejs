@@ -1,11 +1,11 @@
 "use strict";
 
-var express = require("express");
+let express = require("express");
 
-var UserController = require("../controllers/UserController");
-var TestController = require("../controllers/TestController");
+let UserController = require("../controllers/UserController");
+let TestController = require("../controllers/TestController");
 
-var router = express.Router();
+let router = express.Router();
 
 // Rutas usuarios
 router.post("/usuarios", UserController.save);

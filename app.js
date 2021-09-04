@@ -1,13 +1,13 @@
 "use strict";
 //1. Cargar modulos de node para crear el servidor.
-var express = require("express");
-var bodyParser = require("body-parser");
+let express = require("express");
+let bodyParser = require("body-parser");
 //2. Ejecutar express (http)
-var app = express();
+let app = express();
 //3. Cargar las rutas
-var user_routes = require("./routes/user");
+let user_routes = require("./routes/user");
 
-//4. Middlewares 
+//4. Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json()); //otro middleware convertir mediante parser cualquier tipo de peticion a json
 
@@ -26,7 +26,6 @@ app.use((req, res, next) => {
 
 //6. Añadir prefijos a las rutas / Cargar rutas
 //app.use("/api", user_routes);
-app.use("/", user_routes);// lo de asi para adaptar al front android de orne
+app.use("/", user_routes); // lo de asi para adaptar al front android de orne
 
-
-module.exports = app; 
+module.exports = app;

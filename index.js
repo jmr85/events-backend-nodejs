@@ -1,9 +1,9 @@
 'use strict'
 
-var mongoose = require('mongoose');
-var app = require('./app');
+let mongoose = require('mongoose');
+let app = require('./app');
 require('dotenv').config();
-//var port = 4000;
+//let port = 4000;
 
 mongoose.set('useFindAndModify', false);
 
