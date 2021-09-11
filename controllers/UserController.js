@@ -116,6 +116,53 @@ async function login(req, res) {
   }
 }
 
+async function update(req, res) {
+  // tomar el id de usuario que viene por la url
+  let userId = req.params.id;
+  // tomar los datos (parametros) que llegan por put
+  let params = req.body;
+  // validar datos
+  let errValidation = validateUser(params);
+
+  if (
+    !errValidation
+  ) {
+    try {
+      // Encriptar contraseña
+      let salt = bcrypt.genSaltSync();
+
+      params.clave = bcrypt.hashSync(params.clave, salt);
+      // Hacer un Find and Update
+      await Usuario.findByIdAndUpdate({ _id: userId }, params, { new: true }, (err, userUdate) => {
+        if (err) {
+          return res.status(500).send({
+            status: "error",
+            message: "Error al actualizar !!!",
+          });
+        }
+        if (!userUdate) {
+          return res.status(404).send({
+            status: "error",
+            message: "No existe el usuario !!!",
+          });
+        }
+        return res.status(200).send(userUdate);
+      }
+      );
+
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send({
+        ok: false,
+        msg: "Por favor hable con el administrador",
+      });
+    }
+  } else {
+    return res.status(400).send(errValidation);
+  }
+
+}
+
 let controller = {
   getUsers: (req, res) => {
     let query = Usuario.find({});
@@ -171,58 +218,6 @@ let controller = {
       });
     });
   },
-  update: (req, res) => {
-    // tomar el id de usuario que viene por la url
-    let userId = req.params.id;
-    // tomar los datos (parametros) que llegan por put
-    let params = req.body;
-    // validar datos
-    try {
-      let validate_nombre = !validator.isEmpty(params.nombre); // cuando no esta vacio
-      let validate_apellido = !validator.isEmpty(params.apellido);
-      let validate_clave = !validator.isEmpty(params.clave);
-      let validate_mail = !validator.isEmpty(params.mail);
-    } catch (error) {
-      return res.status(404).send({
-        status: "error",
-        message: "Faltan datos por enviar !!!",
-      });
-    }
-    if (
-      validate_nombre &&
-      validate_apellido &&
-      validate_clave &&
-      validate_mail
-    ) {
-      // Hacer un Find and Update
-      Usuario.findByIdAndUpdate(
-        { _id: userId },
-        params,
-        { new: true },
-        (err, userUdate) => {
-          if (err) {
-            return res.status(500).send({
-              status: "error",
-              message: "Error al actualizar !!!",
-            });
-          }
-          if (!userUdate) {
-            return res.status(404).send({
-              status: "error",
-              message: "No existe el usuario !!!",
-            });
-          }
-          return res.status(200).send(userUdate);
-        }
-      );
-    } else {
-      // Devolver respuesta
-      return res.status(200).send({
-        status: "error",
-        message: "La validacion no es correcta !!!",
-      });
-    }
-  },
   delete: (req, res) => {
     // Recoger el id de la url
     let userId = req.params.id;
@@ -251,3 +246,4 @@ let controller = {
 module.exports = controller;
 module.exports.save = save;
 module.exports.login = login;
+module.exports.update = update;
