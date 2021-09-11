@@ -43,11 +43,16 @@ function validateUser(params) {
   let validate_clave = validator.isEmpty(params.clave);
   let validate_mail = validator.isEmpty(params.mail);
 
+  let validate_mail_format = validator.isEmail(params.mail);
+
   let err;
 
   if (validate_nombre || validate_clave || validate_mail) {
     err = generateError("Error", "campo vacio");
+  } else if (!validate_mail_format) {
+    err = generateError("Error", "formato email invalido");
   }
+
   return err;
 }
 
