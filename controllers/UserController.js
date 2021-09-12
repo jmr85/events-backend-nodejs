@@ -1,14 +1,7 @@
 "use strict";
 
+let Usuario = require("../models/UserModel");
 let validator = require("validator");
-
-let fs = require("fs");
-let path = require("path");
-
-let Usuario = require("../models/usuario");
-const { isNumber } = require("util");
-const { populate } = require("../models/usuario");
-
 let bcrypt = require("bcryptjs");
 
 function generateError(status, message) {
@@ -55,7 +48,36 @@ function validateUser(params) {
 
   return err;
 }
+async function getUsers(req, res) {
+  let query = Usuario.find({});
 
+  let last = req.query.last;
+  console.log(last);
+
+  if (last && last != undefined && !isNaN(last)) {
+    console.log("Linea 78: ", last);
+    query.limit(parseInt(last));
+  }
+  // find
+  await query.sort("-_id").exec((err, usuarios) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send({
+        status: "error",
+        message: "Error al devolver los usuarios !!!",
+      });
+    }
+
+    if (!usuarios || usuarios.length === 0) {
+      return res.status(404).send({
+        status: "error",
+        message: "No hay usuarios para mostrar !!!",
+      });
+    }
+
+    return res.status(200).json(usuarios);
+  });
+}
 async function save(req, res) {
   let params = req.body;
   let errValidation = validateUser(params);
@@ -65,6 +87,7 @@ async function save(req, res) {
     let usuario = populateUser(params);
 
     // Encriptar contraseña
+    //salt numero de vueltas, por defecto 10
     let salt = bcrypt.genSaltSync();
 
     usuario.clave = bcrypt.hashSync(usuario.clave, salt);
@@ -129,11 +152,12 @@ async function update(req, res) {
   ) {
     try {
       // Encriptar contraseña
+      //salt numero de vueltas, por defecto 10
       let salt = bcrypt.genSaltSync();
 
       params.clave = bcrypt.hashSync(params.clave, salt);
       // Hacer un Find and Update
-      await Usuario.findByIdAndUpdate({ _id: userId }, params, { new: true }, (err, userUdate) => {
+      await Usuario.findByIdAndUpdate({ _id: userId }, params, { omitUndefined: true, new: true }, (err, userUdate) => {
         if (err) {
           return res.status(500).send({
             status: "error",
@@ -163,67 +187,38 @@ async function update(req, res) {
 
 }
 
-let controller = {
-  getUsers: (req, res) => {
-    let query = Usuario.find({});
-
-    let last = req.query.last;
-    console.log(last);
-
-    if (last && last != undefined && !isNaN(last)) {
-      console.log("Linea 78: ", last);
-      query.limit(parseInt(last));
-    }
-    // find
-    query.sort("-_id").exec((err, usuarios) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send({
-          status: "error",
-          message: "Error al devolver los usuarios !!!",
-        });
-      }
-
-      if (!usuarios || usuarios.length === 0) {
-        return res.status(404).send({
-          status: "error",
-          message: "No hay usuarios para mostrar !!!",
-        });
-      }
-
-      return res.status(200).send(usuarios);
+async function getUser(req, res) {
+  // Toma el id de la url
+  let userId = req.params.id;
+  // Comprueba que existe
+  if (!userId || userId == null) {
+    return res.status(404).send({
+      status: "error",
+      message: "No existe el usuario !!!",
     });
-  },
-  getUser: (req, res) => {
-    // Recoger el id de la urlss
-    let userId = req.params.id;
-    // Comprobar que existe
-    if (!userId || userId == null) {
+  }
+  // Busca el usuario
+  await Usuario.findById(userId, (err, usuario) => {
+    if (err || !usuario) {
       return res.status(404).send({
         status: "error",
         message: "No existe el usuario !!!",
       });
     }
-    // Buscar el usuario
-    Usuario.findById(userId, (err, usuario) => {
-      if (err || !usuario) {
-        return res.status(404).send({
-          status: "error",
-          message: "No existe el usuario !!!",
-        });
-      }
-      // Devolverlo en json
-      return res.status(200).send({
-        usuario,
-      });
+    // Devolverlo en json
+    return res.status(200).send({
+      usuario,
     });
-  },
-  delete: (req, res) => {
-    // Recoger el id de la url
-    let userId = req.params.id;
+  });
+}
 
+async function deleteUser(req, res) {
+  // Recoger el id de la url
+  let userId = req.params.id;
+
+  try {
     // Find and delete
-    Usuario.findOneAndDelete({ _id: userId }, (err, userRemoved) => {
+    await Usuario.findOneAndDelete({ _id: userId }, (err, userRemoved) => {
       if (err) {
         return res.status(500).send({
           status: "error",
@@ -240,10 +235,20 @@ let controller = {
 
       return res.status(200).send(userRemoved);
     });
-  },
-}; // end controller
+  } catch (error) {
+    console.log("Error deleteUser: ", error);
+    res.status(500).json({
+      message: 'Error inesperado'
+    });
+  }
 
-module.exports = controller;
-module.exports.save = save;
-module.exports.login = login;
-module.exports.update = update;
+}
+
+module.exports = {
+  login,
+  getUsers,
+  getUser,
+  save,
+  deleteUser,
+  update
+}

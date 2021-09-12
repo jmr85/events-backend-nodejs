@@ -5,7 +5,7 @@ let bodyParser = require("body-parser");
 //2. Ejecutar express (http)
 let app = express();
 //3. Cargar las rutas
-let user_routes = require("./routes/user");
+let user_routes = require("./routes/UserRoute");
 
 //4. Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -19,8 +19,8 @@ app.use((req, res, next) => {
     "Access-Control-Allow-Headers",
     "Authorization, X-API-KEY, Origin, X-Requested-With, Content-Type, Accept, Access-Control-Allow-Request-Method"
   );
-  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE");
-  res.header("Allow", "GET, POST, OPTIONS, PUT, DELETE");
+  res.header("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
+  res.header("Allow", "GET, POST, OPTIONS, PUT, PATCH, DELETE");
   next();
 });
 
