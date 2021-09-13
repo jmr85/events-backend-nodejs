@@ -1,11 +1,11 @@
 "use strict";
 
-let express = require("express");
+const express = require("express");
 
-let UserController = require("../controllers/UserController");
-let TestController = require("../controllers/TestController");
+const UserController = require("../controllers/UserController");
+const TestController = require("../controllers/TestController");
 
-let router = express.Router();
+const router = express.Router();
 
 // Ruta de prueba
 router.get("/test", TestController.get);

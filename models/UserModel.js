@@ -1,10 +1,10 @@
 "use strict";
 
-let mongoose = require("mongoose");
+const mongoose = require("mongoose");
 
-let Schema = mongoose.Schema;
+const Schema = mongoose.Schema;
 
-let UsuarioSchema = Schema({
+const UsuarioSchema = Schema({
   nombre: String,
   mail: String,
   clave: String,

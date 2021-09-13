@@ -1,11 +1,11 @@
 "use strict";
 //1. Cargar modulos de node para crear el servidor.
-let express = require("express");
-let bodyParser = require("body-parser");
+const express = require("express");
+const bodyParser = require("body-parser");
 //2. Ejecutar express (http)
-let app = express();
+const app = express();
 //3. Cargar las rutas
-let user_routes = require("./routes/UserRoute");
+const user_routes = require("./routes/UserRoute");
 
 //4. Middlewares
 app.use(bodyParser.urlencoded({ extended: false }));

@@ -1,8 +1,8 @@
 "use strict";
 
-let Usuario = require("../models/UserModel");
-let validator = require("validator");
-let bcrypt = require("bcryptjs");
+const Usuario = require("../models/UserModel");
+const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
 function generateError(status, message) {
   return { message: message, status: status };
@@ -62,20 +62,20 @@ async function getUsers(req, res) {
   await query.sort("-_id").exec((err, usuarios) => {
     if (err) {
       console.error(err);
-      return res.status(500).send({
+      res.status(500).send({
         status: "error",
         message: "Error al devolver los usuarios !!!",
       });
     }
 
     if (!usuarios || usuarios.length === 0) {
-      return res.status(404).send({
+      res.status(404).send({
         status: "error",
         message: "No hay usuarios para mostrar !!!",
       });
     }
 
-    return res.status(200).json(usuarios);
+    res.status(200).json(usuarios);
   });
 }
 async function save(req, res) {
