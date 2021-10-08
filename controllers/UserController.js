@@ -127,9 +127,7 @@ async function login(req, res) {
     }
 
     // Devolverlo en json
-    return res.status(200).send({
-      usuario,
-    });
+    return res.status(200).send(usuario);
   } catch (error) {
     console.log(error);
     res.status(500).json({
