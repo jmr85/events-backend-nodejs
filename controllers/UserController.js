@@ -204,9 +204,7 @@ async function getUser(req, res) {
       });
     }
     // Devolverlo en json
-    return res.status(200).send({
-      usuario,
-    });
+    return res.status(200).send(usuario);//send por defecto devuelve en json
   });
 }
 
