@@ -8,8 +8,8 @@ const app = express();
 const user_routes = require("./routes/UserRoute");
 
 //4. Middlewares
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json()); //otro middleware convertir mediante parser cualquier tipo de peticion a json
+app.use(express.json()); //otro middleware convertir mediante parser cualquier tipo de peticion a json
+app.use(express.urlencoded({ extended: false }));
 
 //5. Activar el CORS para permitir peticiones desde el frontend.
 // CORS
