@@ -127,7 +127,14 @@ async function login(req, res) {
     }
 
     // Devolverlo en json
-    return res.status(200).send(usuario);
+    return res.status(200).send(
+      {
+        "id": usuario.id,
+        "nombre": usuario.nombre,
+        "mail": usuario.mail,
+        "clave": usuario.clave
+      }
+    );
   } catch (error) {
     console.log(error);
     res.status(500).json({
