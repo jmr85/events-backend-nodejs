@@ -129,7 +129,7 @@ async function login(req, res) {
     // Devolverlo en json
     return res.status(200).send(
       {
-        "id": "juancho",
+        "id": usuario._id,
         "nombre": usuario.nombre,
         "mail": usuario.mail,
         "clave": usuario.clave
