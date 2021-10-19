@@ -2,8 +2,7 @@
 
 const Usuario = require("../models/UserModel");
 const validator = require("validator");
-const bcrypt = require("bcryptjs");
-const salt = 10;
+const md5 = require("md5");
 
 function generateError(status, message) {
   return { message: message, status: status };
@@ -87,11 +86,7 @@ async function save(req, res) {
   if (!errValidation) {
     let usuario = populateUser(params);
 
-    // Encriptar contraseña
-    //salt numero de vueltas, por defecto 10
-    // let salt = bcrypt.genSaltSync();
-    let newPass = bcrypt.hashSync(usuario.clave);
-    console.log("password: ", usuario.clave, newPass, bcrypt.compareSync(usuario.clave, newPass));
+    let newPass = md5(usuario.clave);
     usuario.clave = newPass;
 
     await usuario.save((err, userCreate) =>
@@ -119,7 +114,7 @@ async function login(req, res) {
     }
 
     // Confirmar los passwords
-    let validPassword = bcrypt.compareSync(clave, usuario.clave);
+    let validPassword = md5(clave) === usuario.clave;
     console.log("login: ", clave, usuario.clave, validPassword);
     if (!validPassword) {
       return res.status(400).json({
@@ -159,14 +154,10 @@ async function update(req, res) {
   ) {
     try {
       // Encriptar contraseña
-      //salt numero de vueltas, por defecto 10
-      // let salt = bcrypt.genSaltSync();
 
-      let newPass = bcrypt.hashSync(params.clave);
-      console.log("password: ", params.clave, newPass, bcrypt.compareSync(params.clave, newPass));
+      let newPass = md5(params.clave);
       params.clave = newPass;
 
-      // params.clave = bcrypt.hashSync(params.clave);
       // Hacer un Find and Update
       await Usuario.findByIdAndUpdate({ _id: userId }, params, { omitUndefined: true, new: true }, (err, userUdate) => {
         if (err) {
