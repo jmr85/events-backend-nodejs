@@ -78,6 +78,7 @@ async function getUsers(req, res) {
     res.status(200).json(usuarios);
   });
 }
+//registro usuario
 async function save(req, res) {
   let params = req.body;
   let errValidation = validateUser(params);
@@ -86,7 +87,7 @@ async function save(req, res) {
   if (!errValidation) {
 
     let usuario = populateUser(params);
-
+    usuario.mail = usuario.mail.toLowerCase();
     try {
 
       const existeEmail = await Usuario.findOne({ mail: usuario.mail });
@@ -173,8 +174,11 @@ async function update(req, res) {
   if (
     !errValidation
   ) {
+    params.mail = params.mail.toLowerCase();
     try {
       const usuarioDB = await Usuario.findById(userId);
+      //en este if entra solo el user que esta editando el mail
+      // va validar si el nuevo mail existe en otro user
       if (usuarioDB.mail !== params.mail) {
         const existeEmail = await Usuario.findOne({ mail: params.mail });
         if (existeEmail) {
