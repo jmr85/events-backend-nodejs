@@ -84,14 +84,35 @@ async function save(req, res) {
   console.log("Pametros: ", params);
 
   if (!errValidation) {
+
     let usuario = populateUser(params);
 
-    let newPass = md5(usuario.clave);
-    usuario.clave = newPass;
+    try {
 
-    await usuario.save((err, userCreate) =>
-      callbackUserCreate(err, userCreate, res)
-    );
+      const existeEmail = await Usuario.findOne({ mail: usuario.mail });
+
+      if (existeEmail) {
+        return res.status(400).send({
+          ok: false,
+          msg: 'Existe un usuario con ese email'
+        });
+      }
+
+      let newPass = md5(usuario.clave);
+      usuario.clave = newPass;
+
+      await usuario.save((err, userCreate) =>
+        callbackUserCreate(err, userCreate, res)
+      );
+
+    } catch (err) {
+      console.log(err);
+      res.status(500).send({
+        ok: false,
+        msg: 'Error inesperado... revisar logs'
+      });
+    }
+
   } else {
     return res.status(400).send(errValidation);
   }
