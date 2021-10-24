@@ -174,6 +174,16 @@ async function update(req, res) {
     !errValidation
   ) {
     try {
+      const usuarioDB = await Usuario.findById(userId);
+      if (usuarioDB.mail !== params.mail) {
+        const existeEmail = await Usuario.findOne({ mail: params.mail });
+        if (existeEmail) {
+          return res.status(400).json({
+            ok: false,
+            msg: 'Ya existe un usuario con ese email'
+          });
+        }
+      }
       // Encriptar contraseña
 
       let newPass = md5(params.clave);
