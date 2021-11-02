@@ -93,7 +93,7 @@ async function save(req, res) {
       const existeEmail = await Usuario.findOne({ mail: usuario.mail });
 
       if (existeEmail) {
-        return res.status(400).send({
+        return res.status(409).send({
           ok: false,
           msg: 'Existe un usuario con ese email'
         });
@@ -182,7 +182,7 @@ async function update(req, res) {
       if (usuarioDB.mail !== params.mail) {
         const existeEmail = await Usuario.findOne({ mail: params.mail });
         if (existeEmail) {
-          return res.status(400).json({
+          return res.status(409).json({
             ok: false,
             msg: 'Ya existe un usuario con ese email'
           });
