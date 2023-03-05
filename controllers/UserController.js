@@ -129,7 +129,8 @@ async function login(req, res) {
     let usuario = await Usuario.findOne({ mail });
 
     if (!usuario) {
-      return res.status(400).json({
+      //401 se utiliza el código de estado HTTP 401 Unauthorized (No autorizado)
+      return res.status(401).json({
         ok: false,
         msg: "El usuario no existe con ese mail",
       });
@@ -139,7 +140,8 @@ async function login(req, res) {
     let validPassword = md5(clave) === usuario.clave;
     console.log("login: ", clave, usuario.clave, validPassword);
     if (!validPassword) {
-      return res.status(400).json({
+      //401 se utiliza el código de estado HTTP 401 Unauthorized (No autorizado)
+      return res.status(401).json({
         ok: false,
         msg: "Password incorrecto",
       });
